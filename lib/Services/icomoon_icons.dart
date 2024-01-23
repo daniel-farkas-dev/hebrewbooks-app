@@ -5,5 +5,5 @@ class Icomoon {
 
   static const String _fontFamily = 'icomoon';
 
-  static const IconData search_filled = IconData(0xe900, fontFamily: _fontFamily);
+  static const searchFilled = IconData(0xe900, fontFamily: _fontFamily);
 }

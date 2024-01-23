@@ -37,53 +37,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 4.0,
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-        shadowColor: Theme.of(context).colorScheme.shadow,
-        leading: SizedBox(
-          width: 48.0,
-          height: 48.0,
-          child: Align(
-            alignment: Alignment.center,
-            child: Image.asset(
-              'images/logo.png',
-              width: 24.0,
-              height: 24.0,
-              repeat: ImageRepeat.noRepeat,
-            ),
-          ),
-        ),
-        title: Column(
-          children: <Widget>[
-            Text('HebrewBooks', style: Theme.of(context).textTheme.titleLarge),
-            Text('63,016 Hebrew Books',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall), //TODO: Pull number from API
-          ],
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              fixedSize: const Size(48.0, 48.0),
-              textStyle: const TextStyle(
-                fontSize: 24.0,
-                height: 1.0,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            child: Text('א',
-                style:
-                    TextStyle(color: lightTheme.colorScheme.onSurfaceVariant)),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Switch to עברית')));
-            },
-          ),
-        ],
-      ),
       body: <Widget>[
         const Home(),
         const Search(),
@@ -96,7 +49,6 @@ class _MainPageState extends State<MainPage> {
           });
         },
         indicatorColor: Theme.of(context).colorScheme.tertiaryContainer,
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
         selectedIndex: _selectedIndex,
         destinations: <Widget>[
           NavigationDestination(
@@ -105,7 +57,7 @@ class _MainPageState extends State<MainPage> {
             label: 'Home',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icomoon.search_filled, color: Theme.of(context).colorScheme.onTertiaryContainer),
+            selectedIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onTertiaryContainer),
             icon: Icon(Icons.search_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant),
             label: 'Search',
           ),
