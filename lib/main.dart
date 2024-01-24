@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hebrewbooks/Home/Home.dart';
-import 'package:hebrewbooks/Saved/Saved.dart';
-import 'package:hebrewbooks/Search/Search.dart';
+import 'package:hebrewbooks/Screens/Home.dart';
+import 'package:hebrewbooks/Screens/Saved.dart';
+import 'package:hebrewbooks/Screens/Search.dart';
 import 'package:hebrewbooks/Shared/theme.dart';
 import 'package:hebrewbooks/Services/icomoon_icons.dart';
 

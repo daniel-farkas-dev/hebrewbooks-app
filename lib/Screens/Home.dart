@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Screens/Info.dart';
+import 'package:hebrewbooks/Shared/book.dart';
+
+import '../Services/fetch.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -8,6 +12,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late Future<Book> futureBook;
+
+  @override
+  void initState() {
+    super.initState();
+    futureBook = fetchBook(677);
+  }
+
   static const topics = [
     'תנ"ך',
     'משניות',
@@ -75,6 +87,17 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
+            FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Info(
+                              id: 677,
+                            )),
+                  );
+                },
+                child: const Icon(Icons.book)),
             Container(
               //constraints: const BoxConstraints(minHeight: 700),
               padding: const EdgeInsets.all(8),
