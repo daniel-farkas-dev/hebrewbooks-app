@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:hebrewbooks/Shared/book.dart';
+import 'package:hebrewbooks/Shared/subject.dart';
 import 'package:http/http.dart' as http;
 
 const bookUrl =
     'https://beta.hebrewbooks.org/api/api.ashx?req=book_info&callback=callback';
 const imageUrl = 'https://beta.hebrewbooks.org/reader/pagepngs/';
+const subjectsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=subject_list&type=subject&callback=callback';
 const iosKey = '/*ios api key*/';
 const androidKey = '/*android api key*/';
 
@@ -21,7 +23,7 @@ String extractJsonFromJsonp(String jsonp) {
     // Extract the JSON string from the match
     return match.group(1) != null ? match.group(1)! : '';
   } else {
-    return '';
+    throw Exception('No match found; JSONP callback not removed');
   }
 }
 
@@ -41,9 +43,6 @@ Future<Book> fetchBook(int id) async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     final trueJson = extractJsonFromJsonp(response.body);
-    if (trueJson == '') {
-      throw Exception('No match found; JSONP callback not removed');
-    }
     return Book.fromJson(jsonDecode(trueJson) as Map<String, dynamic>);
   } else {
     // If the server did not return a 200 OK response,
@@ -52,15 +51,39 @@ Future<Book> fetchBook(int id) async {
   }
 }
 
-String coverUrl(int id, int width, int height) {
-  var url = imageUrl;
-  url += '$id\_1\_$width\_$height\.png';
-  /*if (Platform.isAndroid || Platform.isFuchsia) {
+Future<List<Subject>> fetchSubjects() async {
+  var url = subjectsUrl;
+  if (Platform.isAndroid || Platform.isFuchsia) {
     url += androidKey;
   } else if (Platform.isIOS) {
     url += iosKey;
   } else {
     throw Exception('Unsupported platform- API key unknown');
-  }*/
+  }
+
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Subject.fromJsonList(response.body);
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
+}
+
+
+String coverUrl(int id, int width, int height) {
+  var url = imageUrl;
+  url += '$id\_1\_$width\_$height\.png';
+  if (Platform.isAndroid || Platform.isFuchsia) {
+    url += androidKey;
+  } else if (Platform.isIOS) {
+    url += iosKey;
+  } else {
+    throw Exception('Unsupported platform- API key unknown');
+  }
   return url;
 }

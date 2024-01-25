@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Screens/Info.dart';
+import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/book.dart';
-
-import '../Services/fetch.dart';
+import 'package:hebrewbooks/Shared/subject.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,16 +20,17 @@ class _HomeState extends State<Home> {
     futureBook = fetchBook(677);
   }
 
-  static const topics = [
-    'תנ"ך',
-    'משניות',
-    'גמראא',
-    'הלכה',
-    'מוסר',
-    'חסידות',
-    'שו"ת',
-    'MORE',
+  static const suggestedTopics = [
+    Subject(id: 5002, name: 'תנ"ך', total: -1),
+    Subject(id: 3094, name: 'משניות', total: -1),
+    Subject(id: 1537, name: 'הלכה', total: -1),
+    Subject(id: 2733, name: 'מועדים', total: -1),
+    Subject(id: 2729, name: 'מוסר', total: -1),
+    Subject(id: 1968, name: 'חסידות', total: -1),
+    Subject(id: 4682, name: 'שו"ת', total: -1),
+    Subject(id: -1, name: 'More', total: -1),
   ];
+  var topics = suggestedTopics;
 
   @override
   Widget build(BuildContext context) {
@@ -186,9 +187,25 @@ class _HomeState extends State<Home> {
                                   )
                                 ],
                                 ListTile(
-                                  title: Text(topics[index]),
-                                  onTap: () {},
-                                  trailing: index == topics.length - 1
+                                  title: Text(topics[index].name),
+                                  onTap: topics[index].id == -1
+                                      ? () {
+                                          if (topics == suggestedTopics) {
+                                              fetchSubjects()
+                                                  .then((value) => setState(
+                                                      () => topics = value));
+                                              //TODO: Add loading indicator
+                                            //TODO: Add error handling
+                                            //TODO: Add caching
+                                            //TODO: Add offline mode/detection
+                                          } else {
+                                            setState(() {
+                                              topics = suggestedTopics;
+                                            });
+                                          }
+                                        }
+                                      : null,
+                                  trailing: topics[index].id == -1
                                       ? const Icon(Icons.chevron_right)
                                       : null,
                                 ),
