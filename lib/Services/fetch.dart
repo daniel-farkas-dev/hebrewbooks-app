@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart';
 import 'package:hebrewbooks/Shared/book.dart';
 import 'package:hebrewbooks/Shared/subject.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,8 @@ const bookUrl =
     'https://beta.hebrewbooks.org/api/api.ashx?req=book_info&callback=callback';
 const imageUrl = 'https://beta.hebrewbooks.org/reader/pagepngs/';
 const subjectsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=subject_list&type=subject&callback=callback';
+const topicsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=title_list_for_subject&list_type=subject&callback=callback';
+
 const iosKey = '/*ios api key*/';
 const androidKey = '/*android api key*/';
 
@@ -74,10 +77,9 @@ Future<List<Subject>> fetchSubjects() async {
   }
 }
 
-
 String coverUrl(int id, int width, int height) {
   var url = imageUrl;
-  url += '$id\_1\_$width\_$height\.png';
+  url += '${id}_1_${width}_$height.png?';
   if (Platform.isAndroid || Platform.isFuchsia) {
     url += androidKey;
   } else if (Platform.isIOS) {
@@ -86,4 +88,18 @@ String coverUrl(int id, int width, int height) {
     throw Exception('Unsupported platform- API key unknown');
   }
   return url;
+}
+
+Future<Map<String, dynamic>> fetchSubjectBooks(int id, int start, int length) async {
+  var url = topicsUrl;
+  url += '&id=$id&start=$start&length=$length';
+  if (Platform.isAndroid || Platform.isFuchsia) {
+    url += androidKey;
+  } else if (Platform.isIOS) {
+    url += iosKey;
+  } else {
+    throw Exception('Unsupported platform- API key unknown');
+  }
+  final res = await http.read(Uri.parse(url));
+  return jsonDecode(extractJsonFromJsonp(res));
 }

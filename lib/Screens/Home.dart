@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Screens/Info.dart';
+import 'package:hebrewbooks/Screens/Category.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
-import 'package:hebrewbooks/Shared/book.dart';
+import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
 import 'package:hebrewbooks/Shared/subject.dart';
 
 class Home extends StatefulWidget {
@@ -12,15 +13,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late Future<Book> futureBook;
+  late Future<List<Subject>> fullSubjects;
+  late List<Subject> data;
 
   @override
   void initState() {
     super.initState();
-    futureBook = fetchBook(677);
+    fullSubjects = fetchSubjects();
   }
 
-  static const suggestedTopics = [
+  static const suggestedSubjects = [
     Subject(id: 5002, name: 'תנ"ך', total: -1),
     Subject(id: 3094, name: 'משניות', total: -1),
     Subject(id: 1537, name: 'הלכה', total: -1),
@@ -30,11 +32,12 @@ class _HomeState extends State<Home> {
     Subject(id: 4682, name: 'שו"ת', total: -1),
     Subject(id: -1, name: 'More', total: -1),
   ];
-  var topics = suggestedTopics;
+  var subjects = suggestedSubjects;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: MediaQuery.of(context).size.height,
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: SingleChildScrollView(
         child: Column(
@@ -52,7 +55,7 @@ class _HomeState extends State<Home> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Image.asset(
-                    'images/logo.png',
+                    'assets/images/logo.png',
                     width: 24.0,
                     height: 24.0,
                     repeat: ImageRepeat.noRepeat,
@@ -161,60 +164,74 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 8,
                   ),
-                  Text('Topics',
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    height: 56 * topics.length.toDouble(),
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: ListView.builder(
-                          padding: EdgeInsets.zero,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                if (index != 0) ...[
-                                  const Divider(
-                                    height: 0,
-                                    thickness: 1,
-                                  )
-                                ],
-                                ListTile(
-                                  title: Text(topics[index].name),
-                                  onTap: topics[index].id == -1
-                                      ? () {
-                                          if (topics == suggestedTopics) {
-                                              fetchSubjects()
-                                                  .then((value) => setState(
-                                                      () => topics = value));
-                                              //TODO: Add loading indicator
-                                            //TODO: Add error handling
-                                            //TODO: Add caching
-                                            //TODO: Add offline mode/detection
-                                          } else {
-                                            setState(() {
-                                              topics = suggestedTopics;
-                                            });
-                                          }
-                                        }
-                                      : null,
-                                  trailing: topics[index].id == -1
-                                      ? const Icon(Icons.chevron_right)
-                                      : null,
-                                ),
-                              ],
-                            );
-                          },
-                          itemCount: topics.length),
-                    ),
-                  ),
+                  FutureBuilder(
+                      future: fullSubjects,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          data = snapshot.data as List<Subject>;
+                          return Column(children: [
+                            Text('Subjects',
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              height: 56 * subjects.length.toDouble(),
+                              child: Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        children: [
+                                          if (index != 0) ...[
+                                            const Divider(
+                                              height: 0,
+                                              thickness: 1,
+                                            )
+                                          ],
+                                          ListTile(
+                                            title: Text(subjects[index].name),
+                                            onTap: subjects[index].id == -1
+                                                ? () {
+                                                    _swapSubjects();
+                                                  }
+                                                : () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Category(
+                                                                id: subjects[index].id,
+                                                                name: subjects[index].name,
+                                                              )),
+                                                    );
+                                                  },
+                                            trailing: subjects[index].id == -1
+                                                ? const Icon(
+                                                    Icons.chevron_right)
+                                                : null,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    itemCount: subjects.length),
+                              ),
+                            ),
+                          ]);
+                        } else if (snapshot.hasError) {
+                          //TODO: Put a real offline indicator here- provider if fancy
+                          return Text('${snapshot.error}');
+                        }
+                        return const CenteredSpinner();
+                      }),
                 ],
               ),
             ),
@@ -222,5 +239,15 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  _swapSubjects() async {
+    setState(() {
+      if (subjects == suggestedSubjects && data.isNotEmpty) {
+        subjects = data;
+      } else {
+        subjects = suggestedSubjects;
+      }
+    });
   }
 }

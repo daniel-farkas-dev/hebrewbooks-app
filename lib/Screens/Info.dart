@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
+import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
 import 'package:hebrewbooks/Shared/book.dart';
 
 class Info extends StatefulWidget {
@@ -14,7 +15,6 @@ class Info extends StatefulWidget {
 class _InfoState extends State<Info> {
   late Future<Book> futureBook;
 
-  //TODO: Tune these values
   static const imageHeight = 400;
   static const imageWidth = 300;
 
@@ -69,17 +69,10 @@ class _InfoState extends State<Info> {
                               if (loadingProgress == null) {
                                 return child;
                               }
-                              return const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 100,
-                                      height: 100,
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  ]);
+                              return const CenteredSpinner();
                             },
                             errorBuilder: (context, error, stackTrace) {
+                              debugPrint('Error: $error');
                               return SizedBox(
                                 height: imageHeight.toDouble(),
                                 child: Text(
@@ -172,15 +165,7 @@ class _InfoState extends State<Info> {
           }
 
           // By default, show a loading spinner.
-          return const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: CircularProgressIndicator(),
-                ),
-              ]);
+          return const CenteredSpinner();
         },
       ),
     );
