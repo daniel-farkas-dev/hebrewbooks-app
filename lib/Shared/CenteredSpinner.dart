@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
 class CenteredSpinner extends StatelessWidget {
+  final int size;
   const CenteredSpinner({
     super.key,
+    this.size = 100,
   });
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 100,
-            height: 100,
-            child: CircularProgressIndicator(),
+            width: size.toDouble(),
+            height: size.toDouble(),
+            child: const CircularProgressIndicator(),
           ),
         ]);
   }

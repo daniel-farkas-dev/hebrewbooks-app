@@ -25,3 +25,4 @@ class Book {
 }
 //TODO: Auto reformat the author to remove the comma
 //TODO: Convert the year
+//TODO: Properly handle missing data

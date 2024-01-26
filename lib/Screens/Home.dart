@@ -91,17 +91,6 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Info(
-                              id: 677,
-                            )),
-                  );
-                },
-                child: const Icon(Icons.book)),
             Container(
               //constraints: const BoxConstraints(minHeight: 700),
               padding: const EdgeInsets.all(8),
