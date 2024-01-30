@@ -33,8 +33,13 @@ class _BookTileState extends State<BookTile> {
             return Material(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: ListTile(
-                title: Text(snapshot.data!.title, maxLines: 1, overflow: TextOverflow.ellipsis,),
-                subtitle: Text(snapshot.data!.author, maxLines: 1, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  snapshot.data!.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(snapshot.data!.author,
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
                 //TODO: Make the overflow less ugly
                 trailing: Image.network(
                   coverUrl(snapshot.data!.id, 100, 100),
@@ -45,14 +50,14 @@ class _BookTileState extends State<BookTile> {
                       return child;
                     }
                     return const CenteredSpinner(
-                      size: imageHeight,
+                      size: imageHeight ~/ 2,
                     );
                   },
                   errorBuilder: (context, error, stackTrace) {
                     debugPrint('Error: $error');
                     return SizedBox(
-                      height: imageHeight.toDouble(),
-                      //TODO: Blow image up on tap
+                      height:
+                          imageHeight.toDouble(),
                       child: Text(
                         'Error: Image did not load',
                         style: Theme.of(context).textTheme.bodySmall,
@@ -62,19 +67,22 @@ class _BookTileState extends State<BookTile> {
                   },
                 ),
                 onTap: () {
+                  //TODO: Use a hero animation using the image
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Info(
-                          id: widget.id,
-                        )),
+                              id: widget.id,
+                            )),
                   );
                 },
                 onLongPress: () {
-                  //TODO: Blow image up on tap
+                  //TODO: Use provider to expand the image and stack it above the tile
                 },
               ),
             );
+          } else if (snapshot.hasError){
+            return Text(snapshot.error.toString());
           } else {
             return const CenteredSpinner();
           }

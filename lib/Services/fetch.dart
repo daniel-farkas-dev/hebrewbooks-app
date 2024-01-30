@@ -15,6 +15,8 @@ const topicsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=title_list_for_
 const iosKey = '/*ios api key*/';
 const androidKey = '/*android api key*/';
 
+//TODO: Become consistent about passing json (String v Map)
+
 String extractJsonFromJsonp(String jsonp) {
   // Define the regex pattern to match the JSON within setBookInfo callback
   final regex = RegExp(r'callback\((.*?)\);');

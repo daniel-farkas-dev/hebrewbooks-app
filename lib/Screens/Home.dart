@@ -23,6 +23,7 @@ class _HomeState extends State<Home> {
   }
 
   static const suggestedSubjects = [
+    //Figure out a better system for this; maybe, eventualy Google Cloud Messages
     Subject(id: 5002, name: 'תנ"ך', total: -1),
     Subject(id: 3094, name: 'משניות', total: -1),
     Subject(id: 1537, name: 'הלכה', total: -1),

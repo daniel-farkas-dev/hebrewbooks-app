@@ -20,6 +20,7 @@ class _InfoState extends State<Info> {
 
   @override
   void initState() {
+    //TODO: Start downloading the book
     super.initState();
     futureBook = fetchBook(widget.id);
   }
@@ -121,6 +122,7 @@ class _InfoState extends State<Info> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
                             children: [
+                              //TODO: Check if it is already saved
                               FloatingActionButton.extended(
                                 heroTag: 'save',
                                 label: const Text('Save'),
@@ -131,6 +133,7 @@ class _InfoState extends State<Info> {
                                     Theme.of(context).colorScheme.onSecondary,
                                 onPressed: () {},
                               ),
+                              //TODO: Create two sharing options (URL | File)
                               FloatingActionButton.extended(
                                 heroTag: 'share',
                                 label: const Text('Share'),
@@ -160,7 +163,7 @@ class _InfoState extends State<Info> {
                   )
                 ]));
           } else if (snapshot.hasError) {
-            //TODO:Check whose fault is the no-connection; fix error
+            //TODO: Check whose fault is the no-connection; fix error
             return Text('${snapshot.error}');
           }
 

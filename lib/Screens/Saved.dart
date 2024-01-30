@@ -8,6 +8,8 @@ class Saved extends StatefulWidget {
 }
 
 class _SavedState extends State<Saved> {
+  //TODO: Pull these from local storage
+  //TODO: Make a data object for these which has all the info
   static const saved = [
     (
       title: 'ערוך השלחן – חושן משפט ב',
@@ -64,6 +66,7 @@ class _SavedState extends State<Saved> {
                                 '${saved[index].author} • ${saved[index].published}'),
                             onTap: () {},
                             trailing: Wrap(
+                              //TODO: Change the local history
                               children: [
                                 if (saved[index].downloaded)
                                   const Icon(

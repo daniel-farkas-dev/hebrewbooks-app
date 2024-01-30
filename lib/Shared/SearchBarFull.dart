@@ -12,6 +12,7 @@ class _SearchBarFullState extends State<SearchBarFull> {
   final TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
   String searchQuery = 'Search query';
+  //TODO: Read history, set input, call search
   @override
   Widget build(BuildContext context) {
     return AppBar(

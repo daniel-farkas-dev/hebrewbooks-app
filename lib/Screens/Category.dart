@@ -31,7 +31,7 @@ class _CategoryState extends State<Category> {
     fetchData();
     scrollController.addListener(() {
       // nextPageTrigger will have a value equivalent to 80% of the list size.
-      var nextPageTrigger = 0.8 * scrollController.position.maxScrollExtent;
+      var nextPageTrigger = scrollController.position.maxScrollExtent - 2000;
       // _scrollController fetches the next paginated data when the current postion of the user on the screen has surpassed
       if (scrollController.position.pixels >= nextPageTrigger &&
           !isLoading &&
@@ -55,6 +55,7 @@ class _CategoryState extends State<Category> {
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: SingleChildScrollView(
         controller: scrollController,
+        physics: const ClampingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -105,7 +106,7 @@ class _CategoryState extends State<Category> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: SizedBox(
-          height: 82 * books.length.toDouble(),
+          height: 72 * books.length.toDouble(),
           child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
@@ -115,10 +116,13 @@ class _CategoryState extends State<Category> {
                   if (isError) {
                     return Center(child: errorDialog(size: 15));
                   } else {
-                    return const CenteredSpinner(size: 82);
+                    return null;
                   }
                 }
                 final int bookId = books[index]['id'] as int;
+                if (bookId < 0) {
+                  return null;
+                }
                 return BookTile(id: bookId);
               }),
         ));
@@ -158,5 +162,4 @@ class _CategoryState extends State<Category> {
     );
   }
 }
-//TODO: Check that the end detection works
-//TODO: Prune the non-loading books
+//TODO: Prune the non-loading books?

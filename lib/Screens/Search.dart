@@ -10,6 +10,7 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  //TODO: Pull from history
   static const history = [
     'אגרות משה',
     'לקוטי אמרים תניא',
@@ -31,6 +32,7 @@ class _SearchState extends State<Search> {
             const SearchBarFull(
               hintText: 'Search HebrewBooks',
             ),
+            //TODO: Add search results
             Container(
               height: history.length * 56.0,
               child: Directionality(
