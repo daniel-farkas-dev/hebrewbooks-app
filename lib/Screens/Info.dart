@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
 import 'package:hebrewbooks/Shared/book.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Info extends StatefulWidget {
   final int id;
@@ -133,7 +134,6 @@ class _InfoState extends State<Info> {
                                     Theme.of(context).colorScheme.onSecondary,
                                 onPressed: () {},
                               ),
-                              //TODO: Create two sharing options (URL | File)
                               FloatingActionButton.extended(
                                 heroTag: 'share',
                                 label: const Text('Share'),
@@ -142,7 +142,7 @@ class _InfoState extends State<Info> {
                                     Theme.of(context).colorScheme.secondary,
                                 foregroundColor:
                                     Theme.of(context).colorScheme.onSecondary,
-                                onPressed: () {},
+                                onPressed: () => showShareOptions(),
                               ),
                               FloatingActionButton.extended(
                                 heroTag: 'read',
@@ -172,5 +172,37 @@ class _InfoState extends State<Info> {
         },
       ),
     );
+  }
+
+  void showShareOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('Share Link'),
+              onTap: () => shareLink(),
+            ),
+            const ListTile(
+              leading: Icon(Icons.file_upload_outlined),
+              title: Text('Share File'),
+              onTap: null, //TODO: Add file sharing
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void shareLink() async {
+    final link = Uri(
+      scheme: 'https',
+      host: 'beta.hebrewbooks.org',
+      path: '/${widget.id}'
+    );
+    await Share.shareUri(link);
   }
 }

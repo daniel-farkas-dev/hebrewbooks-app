@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
+import 'package:hebrewbooks/Shared/BookList.dart';
 import 'package:hebrewbooks/Shared/BookTile.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
 
@@ -14,40 +15,7 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  bool loading = true;
-  late bool isLastPage;
-  late int upTo = 1;
-  late bool isError = false;
-  late bool isLoading = true;
-  late bool isOver = false;
-  static const int perReq = 15;
-  late List<dynamic> books = [];
-  final int trigger = 3;
   ScrollController scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-    scrollController.addListener(() {
-      // nextPageTrigger will have a value equivalent to 80% of the list size.
-      var nextPageTrigger = scrollController.position.maxScrollExtent - 2000;
-      // _scrollController fetches the next paginated data when the current postion of the user on the screen has surpassed
-      if (scrollController.position.pixels >= nextPageTrigger &&
-          !isLoading &&
-          !isOver) {
-        isLoading = true;
-        fetchData();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    scrollController.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -69,95 +37,13 @@ class _CategoryState extends State<Category> {
                   style: Theme.of(context).textTheme.titleLarge),
               centerTitle: false,
             ),
-            BuildPostsView(),
+            BookList(
+              type: 'subject',
+              scrollController: scrollController,
+              subjectId: widget.id,
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Future<void> fetchData() async {
-    try {
-      final response = await fetchSubjectBooks(widget.id, upTo, perReq);
-
-      setState(() {
-        isOver = response['data'].length < perReq;
-        isLoading = false;
-        upTo += perReq;
-        books.addAll(response['data']);
-      });
-    } catch (e) {
-      debugPrint('error --> $e');
-      setState(() {
-        isLoading = false;
-        isError = true;
-      });
-    }
-  }
-
-  Widget BuildPostsView() {
-    if (books.isEmpty) {
-      if (isLoading) {
-        return const CenteredSpinner();
-      } else if (isError) {
-        return Center(child: errorDialog(size: 20));
-      }
-    }
-    return Directionality(
-        textDirection: TextDirection.rtl,
-        child: SizedBox(
-          height: 72 * books.length.toDouble(),
-          child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              itemCount: books.length + (isOver ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == books.length) {
-                  if (isError) {
-                    return Center(child: errorDialog(size: 15));
-                  } else {
-                    return null;
-                  }
-                }
-                final int bookId = books[index]['id'] as int;
-                if (bookId < 0) {
-                  return null;
-                }
-                return BookTile(id: bookId);
-              }),
-        ));
-  }
-
-  Widget errorDialog({required double size}) {
-    return SizedBox(
-      height: 180,
-      width: 200,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'An error occurred when fetching the books.',
-            style: TextStyle(
-                fontSize: size,
-                fontWeight: FontWeight.w500,
-                color: Colors.black),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  isLoading = true;
-                  isError = false;
-                  fetchData();
-                });
-              },
-              child: const Text(
-                'Retry',
-                style: TextStyle(fontSize: 20, color: Colors.purpleAccent),
-              )),
-        ],
       ),
     );
   }

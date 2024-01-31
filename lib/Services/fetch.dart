@@ -11,6 +11,7 @@ const bookUrl =
 const imageUrl = 'https://beta.hebrewbooks.org/reader/pagepngs/';
 const subjectsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=subject_list&type=subject&callback=callback';
 const topicsUrl = 'https://beta.hebrewbooks.org/api/api.ashx?req=title_list_for_subject&list_type=subject&callback=callback';
+const searchUrl = 'https://beta.hebrewbooks.org/api/api.ashx?author_search=&callback=callback';
 
 const iosKey = '/*ios api key*/';
 const androidKey = '/*android api key*/';
@@ -104,4 +105,20 @@ Future<Map<String, dynamic>> fetchSubjectBooks(int id, int start, int length) as
   }
   final res = await http.read(Uri.parse(url));
   return jsonDecode(extractJsonFromJsonp(res));
+}
+
+Future<Map<String, dynamic>> fetchSearchBooks(String query, int start, int length) async {
+  var url = searchUrl;
+  url += '&title_search=$query&start=$start&length=$length';
+  if (Platform.isAndroid || Platform.isFuchsia) {
+    url += androidKey;
+  } else if (Platform.isIOS) {
+    url += iosKey;
+  } else {
+    throw Exception('Unsupported platform- API key unknown');
+  }
+  final res = await http.read(Uri.parse(url));
+  final json = extractJsonFromJsonp(res);
+  if (json == '') return Map();
+  return jsonDecode(json);
 }
