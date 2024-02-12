@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/BookTile.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
+import 'package:provider/provider.dart';
 
 class BookList extends StatefulWidget {
   final String type;
   final ScrollController scrollController;
   final int? subjectId;
-  final String? searchQuery;
-  const BookList(
-      {super.key,
-      required this.type,
-      required this.scrollController,
-      this.subjectId,
-      this.searchQuery})
-      : assert((type == 'subject' && subjectId != null) ||
-            (type == 'search' && searchQuery != null));
+  const BookList({
+    super.key,
+    required this.type,
+    required this.scrollController,
+    this.subjectId,
+  }) : assert((type == 'subject' && subjectId != null) || (type == 'search'));
 
   @override
   State<BookList> createState() => _BookListState();
@@ -33,6 +32,7 @@ class _BookListState extends State<BookList> {
   @override
   void initState() {
     super.initState();
+    debugPrint('initState');
     fetchData();
     widget.scrollController.addListener(() {
       // nextPageTrigger will have a value equivalent to 80% of the list size.
@@ -48,14 +48,9 @@ class _BookListState extends State<BookList> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    //TODO: Fix this
-    //widget.scrollController.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    debugPrint('build');
+    if (widget.type == 'search') context.watch<SearchQueryProvider>();
     if (_books.isEmpty) {
       if (_isLoading) {
         return const CenteredSpinner();
@@ -88,6 +83,20 @@ class _BookListState extends State<BookList> {
                 return BookTile(id: bookId);
               }),
         ));
+  }
+  //TODO: Fix all the problems with scrolling when _isOver is true
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint('didChangeDependencies');
+    _isOver = false;
+    _noResults = false;
+    _isLoading = true;
+    _isError = false;
+    _books.clear();
+    _upTo = 1;
+    fetchData();
   }
 
   Widget errorDialog({required double size}) {
@@ -125,37 +134,35 @@ class _BookListState extends State<BookList> {
   }
 
   Future<void> fetchData() async {
-    if (widget.type == 'search' &&
-        (widget.searchQuery == null || widget.searchQuery!.length < 3)) return;
+    if (_noResults || _isOver) return;
+
+    String searchQuery = '';
+    if (widget.type == 'search') {
+      searchQuery = Provider.of<SearchQueryProvider>(context, listen: false).searchQuery ?? '';
+      if (searchQuery.isEmpty || searchQuery.length < 3) return;
+    }
+
     try {
-      final Map<String, dynamic> response;
-      if (widget.type == 'subject') {
-        int id = widget.subjectId ?? -1;
-        response = await fetchSubjectBooks(id, _upTo, perReq);
-      } else if (widget.type == 'search') {
-        String query = widget.searchQuery ?? '';
-        response = await fetchSearchBooks(query, _upTo, perReq);
-      } else {
-        throw 'Unimplemented BookList type';
-      }
+      final Map<String, dynamic> response = widget.type == 'subject'
+          ? await fetchSubjectBooks(widget.subjectId ?? -1, _upTo, perReq)
+          : await fetchSearchBooks(searchQuery, _upTo, perReq);
+
       if (response['data'] == null) {
         _noResults = true;
-        _isLoading = false;
-        return;
+      } else {
+        setState(() {
+          _noResults = false;
+          _isOver = response['data'].length < perReq;
+          _upTo += perReq;
+          _books.addAll(response['data']);
+        });
       }
-      setState(() {
-        _noResults = false;
-        _isOver = response['data'].length < perReq;
-        _isLoading = false;
-        _upTo += perReq;
-        _books.addAll(response['data']);
-      });
     } catch (e) {
       debugPrint('error --> $e');
-      setState(() {
-        _isLoading = false;
-        _isError = true;
-      });
+      if (!mounted) return;
+      _isError = true;
     }
+
+    _isLoading = false;
   }
 }
