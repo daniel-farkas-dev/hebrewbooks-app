@@ -3,7 +3,6 @@ import 'package:hebrewbooks/Screens/Home.dart';
 import 'package:hebrewbooks/Screens/Saved.dart';
 import 'package:hebrewbooks/Screens/Search.dart';
 import 'package:hebrewbooks/Shared/theme.dart';
-import 'package:hebrewbooks/Services/icomoon_icons.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hebrewbooks/Screens/Info.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
@@ -6,29 +7,39 @@ import 'package:hebrewbooks/Shared/book.dart';
 
 class BookTile extends StatefulWidget {
   final int id;
+  final Function removeFromSet;
 
-  const BookTile({super.key, required this.id});
+  const BookTile({super.key, required this.id, required this.removeFromSet});
 
   @override
   State<BookTile> createState() => _BookTileState();
 }
 
 class _BookTileState extends State<BookTile> {
-  late Future<Book> book;
+  late Future<Book>? book;
+  bool _isError = false;
+  int _reloaded = 0;
 
   static const int imageHeight = 56;
 
   @override
   void initState() {
     super.initState();
-    book = fetchBook(widget.id);
+    book = _safeFetchBook(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isError) {
+      widget.removeFromSet(widget.id);
+      return const SizedBox.shrink();
+    }
     return FutureBuilder(
         future: book,
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            _errorHandler(snapshot.error);
+          }
           if (snapshot.hasData) {
             return Material(
               color: Theme.of(context).colorScheme.primaryContainer,
@@ -56,8 +67,7 @@ class _BookTileState extends State<BookTile> {
                   errorBuilder: (context, error, stackTrace) {
                     debugPrint('Error: $error');
                     return SizedBox(
-                      height:
-                          imageHeight.toDouble(),
+                      height: imageHeight.toDouble(),
                       child: Text(
                         'Error: Image did not load',
                         style: Theme.of(context).textTheme.bodySmall,
@@ -81,11 +91,35 @@ class _BookTileState extends State<BookTile> {
                 },
               ),
             );
-          } else if (snapshot.hasError){
-            return Text(snapshot.error.toString());
           } else {
             return const CenteredSpinner();
           }
         });
+  }
+
+  void _errorHandler(Object? error) {
+    //TODO: Put real error handling here
+    debugPrint('error --> $error');
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (_reloaded > 3) {
+        setState(() {
+          _isError = true;
+        });
+        return;
+      }
+      setState(() {
+        book = fetchBook(widget.id);
+        _reloaded++;
+      });
+    });
+  }
+
+  Future<Book>? _safeFetchBook(int id) {
+    try {
+      return fetchBook(id);
+    } on FormatException {
+      _isError = true;
+    }
+    return null;
   }
 }

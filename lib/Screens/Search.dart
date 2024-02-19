@@ -15,6 +15,7 @@ class _SearchState extends State<Search> {
   final TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
   final String? hintText = 'Search Data';
+  final FocusNode _focusNode= FocusNode();
 
   static const history = [
     'אגרות משה',
@@ -65,8 +66,8 @@ class _SearchState extends State<Search> {
 
   Widget _buildSearchField(BuildContext contextWithProvider) {
     return TextField(
+      focusNode: _focusNode,
       controller: _searchQueryController,
-      autofocus: true,
       decoration: InputDecoration(
         hintText: 'Search Data...',
         border: InputBorder.none,
@@ -103,7 +104,11 @@ class _SearchState extends State<Search> {
                         ListTile(
                           title: Text(history[index]),
                           onTap: () {
-                            //TODO: Go to search mode; set text to query
+                            setState(() {
+                              _searchQueryController.text = history[index];
+                              updateSearchQuery(history[index], contextWithProvider);
+                              _startSearch(contextWithProvider, false);
+                            });
                           },
                           trailing: const Icon(Icons.history),
                         ),
@@ -148,13 +153,14 @@ class _SearchState extends State<Search> {
     ];
   }
 
-  void _startSearch(BuildContext contextWithProvider) {
+  void _startSearch(BuildContext contextWithProvider, [bool focus = true]) {
     ModalRoute.of(context)
         ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: () => _stopSearching(contextWithProvider)));
 
     setState(() {
       _isSearching = true;
     });
+    if (focus) _focusNode.requestFocus();
   }
 
   void _stopSearching(BuildContext contextWithProvider) {

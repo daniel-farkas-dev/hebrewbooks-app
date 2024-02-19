@@ -50,7 +50,7 @@ class _SavedState extends State<Saved> {
                   Text('Saved', style: Theme.of(context).textTheme.titleLarge),
               centerTitle: true,
             ),
-            Container(
+            SizedBox(
               height: saved.length * 72.0,
               child: Directionality(
                 textDirection: TextDirection.rtl,

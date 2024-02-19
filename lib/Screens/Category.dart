@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/BookList.dart';
-import 'package:hebrewbooks/Shared/BookTile.dart';
-import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
 
 class Category extends StatefulWidget {
   final int id;

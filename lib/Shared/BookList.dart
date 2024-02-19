@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/BookTile.dart';
@@ -21,7 +22,7 @@ class BookList extends StatefulWidget {
 }
 
 class _BookListState extends State<BookList> {
-  final List<dynamic> _books = [];
+  final Set<int> _books = {};
   int _upTo = 1;
   bool _isError = false;
   bool _isLoading = true;
@@ -32,8 +33,6 @@ class _BookListState extends State<BookList> {
   @override
   void initState() {
     super.initState();
-    debugPrint('initState');
-    fetchData();
     widget.scrollController.addListener(() {
       // nextPageTrigger will have a value equivalent to 80% of the list size.
       var nextPageTrigger =
@@ -48,8 +47,13 @@ class _BookListState extends State<BookList> {
   }
 
   @override
+  void dispose() {
+    //TODO: Cancel the fetch request when the widget is disposed
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    debugPrint('build');
     if (widget.type == 'search') context.watch<SearchQueryProvider>();
     if (_books.isEmpty) {
       if (_isLoading) {
@@ -76,20 +80,20 @@ class _BookListState extends State<BookList> {
                     return null;
                   }
                 }
-                final int bookId = int.parse(_books[index]['id'].toString());
+                final int bookId = _books.elementAt(index);
                 if (bookId < 0) {
                   return null;
                 }
-                return BookTile(id: bookId);
+                return BookTile(id: bookId, removeFromSet: removeFromSet);
               }),
         ));
   }
-  //TODO: Fix all the problems with scrolling when _isOver is true
+
+  //TODO: Add a back to top button
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    debugPrint('didChangeDependencies');
     _isOver = false;
     _noResults = false;
     _isLoading = true;
@@ -134,11 +138,13 @@ class _BookListState extends State<BookList> {
   }
 
   Future<void> fetchData() async {
-    if (_noResults || _isOver) return;
+    if (_noResults || _isOver || !mounted) return;
 
     String searchQuery = '';
     if (widget.type == 'search') {
-      searchQuery = Provider.of<SearchQueryProvider>(context, listen: false).searchQuery ?? '';
+      searchQuery = Provider.of<SearchQueryProvider>(context, listen: false)
+              .searchQuery ??
+          '';
       if (searchQuery.isEmpty || searchQuery.length < 3) return;
     }
 
@@ -154,7 +160,9 @@ class _BookListState extends State<BookList> {
           _noResults = false;
           _isOver = response['data'].length < perReq;
           _upTo += perReq;
-          _books.addAll(response['data']);
+          for (var book in response['data']) {
+            _books.add(int.parse(book['id']));
+          }
         });
       }
     } catch (e) {
@@ -164,5 +172,13 @@ class _BookListState extends State<BookList> {
     }
 
     _isLoading = false;
+  }
+
+  void removeFromSet(int id) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _books.remove(id);
+      });
+    });
   }
 }
