@@ -45,4 +45,3 @@ class _CategoryState extends State<Category> {
     );
   }
 }
-//TODO: Prune the non-loading books?

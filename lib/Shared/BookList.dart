@@ -137,8 +137,12 @@ class _BookListState extends State<BookList> {
     );
   }
 
-  Future<void> fetchData() async {
-    if (_noResults || _isOver || !mounted) return;
+  void fetchData() async {
+    if (_noResults || _isOver || !mounted) {
+      debugPrint(
+          'fetchData: noResults: $_noResults, isOver: $_isOver, mounted: $mounted');
+      return;
+    }
 
     String searchQuery = '';
     if (widget.type == 'search') {
@@ -156,21 +160,21 @@ class _BookListState extends State<BookList> {
       if (response['data'] == null) {
         _noResults = true;
       } else {
+        if(!mounted) return; //TODO: Extend the widget with a safeSetState method
         setState(() {
           _noResults = false;
-          _isOver = response['data'].length < perReq;
+          _isOver = response['data'].length < perReq; //TODO: Make this actually work
           _upTo += perReq;
           for (var book in response['data']) {
-            _books.add(int.parse(book['id']));
+            _books.add(int.parse(book['id'].toString()));
           }
         });
       }
     } catch (e) {
-      debugPrint('error --> $e');
+      debugPrint('fetchData() failed: $e');
       if (!mounted) return;
       _isError = true;
     }
-
     _isLoading = false;
   }
 
@@ -178,6 +182,7 @@ class _BookListState extends State<BookList> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _books.remove(id);
+        debugPrint('Removed $id from the set');
       });
     });
   }
