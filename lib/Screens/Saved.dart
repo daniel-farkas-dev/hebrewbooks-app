@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Shared/SavedBook.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -10,25 +11,31 @@ class Saved extends StatefulWidget {
 class _SavedState extends State<Saved> {
   //TODO: Pull these from local storage
   //TODO: Make a data object for these which has all the info
-  static const saved = [
-    (
-      title: 'ערוך השלחן – חושן משפט ב',
-      author: 'יחיאל מיכל בן אריה יצחק עפשטיין',
-      published: 1884,
-      downloaded: false
-    ),
-    (
-      title: 'קיצור שולחן ערוך',
-      author: 'שלמה בן יוסף גנצפריד',
-      published: 1802,
-      downloaded: true
-    ),
-    (
-      title: 'ערוך לנר – סנהדרין',
-      author: 'יעקב יוקב בן אהרן עטלינגר',
-      published: 1931,
-      downloaded: false
-    ),
+  static var saved = [
+    SavedBook.fromJson({
+      'title': 'ערוך השלחן – חושן משפט א',
+      'author': 'יחיאל מיכל בן אריה יצחק עפשטיין',
+      'published': 1884,
+      'id': 9103,
+      'pages': 521,
+      'downloaded': false
+    }),
+    SavedBook.fromJson({
+      'title': 'קיצור שולחן ערוך',
+      'author': 'שלמה בן יוסף גנצפריד',
+      'published': 1802,
+      'id': 49252,
+      'pages': 30,
+      'downloaded': true
+    }),
+    SavedBook.fromJson({
+      'title': 'ערוך לנר – סנהדרין',
+      'author': 'יעקב יוקב בן אהרן עטלינגר',
+      'published': 1931,
+      'id': 14415,
+      'pages': 171,
+      'downloaded': false
+    }),
   ];
 
   @override
@@ -63,7 +70,7 @@ class _SavedState extends State<Saved> {
                           ListTile(
                             title: Text(saved[index].title),
                             subtitle: Text(
-                                '${saved[index].author} • ${saved[index].published}'),
+                                '${saved[index].author} • ${saved[index].year}'),
                             onTap: () {},
                             trailing: Wrap(
                               //TODO: Change the local history

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
-import 'package:hebrewbooks/Shared/book.dart';
+import 'package:hebrewbooks/Shared/Book.dart';
 import 'package:share_plus/share_plus.dart';
 
 class Info extends StatefulWidget {

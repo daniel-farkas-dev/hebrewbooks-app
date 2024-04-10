@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:hebrewbooks/Shared/book.dart';
-import 'package:hebrewbooks/Shared/subject.dart';
+import 'package:hebrewbooks/Shared/Book.dart';
+import 'package:hebrewbooks/Shared/Subject.dart';
 import 'package:http/http.dart' as http;
 
 const bookUrl =

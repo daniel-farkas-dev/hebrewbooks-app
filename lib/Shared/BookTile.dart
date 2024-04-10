@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:hebrewbooks/Screens/Info.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
-import 'package:hebrewbooks/Shared/book.dart';
+import 'package:hebrewbooks/Shared/Book.dart';
 
 class BookTile extends StatefulWidget {
   final int id;

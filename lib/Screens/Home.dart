@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Screens/Category.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
-import 'package:hebrewbooks/Shared/subject.dart';
+import 'package:hebrewbooks/Shared/Subject.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

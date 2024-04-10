@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Screens/Home.dart';
 import 'package:hebrewbooks/Screens/Saved.dart';
 import 'package:hebrewbooks/Screens/Search.dart';
-import 'package:hebrewbooks/Shared/theme.dart';
+import 'package:hebrewbooks/Shared/Theme.dart';
 
 void main() {
   runApp(const MyApp());
