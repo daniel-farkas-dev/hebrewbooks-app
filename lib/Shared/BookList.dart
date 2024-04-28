@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:hebrewbooks/Providers/BackToTopProvider.dart';
 import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/BookTile.dart';
@@ -34,6 +35,7 @@ class _BookListState extends State<BookList> {
   void initState() {
     super.initState();
     widget.scrollController.addListener(() {
+      if (!mounted) return;
       // nextPageTrigger will have a value equivalent to 80% of the list size.
       var nextPageTrigger =
           widget.scrollController.position.maxScrollExtent - 2000;
@@ -43,13 +45,21 @@ class _BookListState extends State<BookList> {
         _isLoading = true;
         fetchData();
       }
+      if (widget.scrollController.position.pixels > 100) {
+        Provider.of<BackToTopProvider>(context, listen: false).setEnabled(true);
+      } else {
+        Provider.of<BackToTopProvider>(context, listen: false).setEnabled(false);
+      }
     });
-  }
+    // When pressed changes to true, the scrollController will animate to the top of the list.
+    Provider.of<BackToTopProvider>(context, listen: false).addListener(() {
+      if (!mounted) return;
+      if (Provider.of<BackToTopProvider>(context, listen: false).pressed) {
+        widget.scrollController.animateTo(0,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+      }
+    });
 
-  @override
-  void dispose() {
-    //TODO: Cancel the fetch request when the widget is disposed
-    super.dispose();
   }
 
   @override
@@ -88,8 +98,6 @@ class _BookListState extends State<BookList> {
               }),
         ));
   }
-
-  //TODO: Add a back to top button
 
   @override
   void didChangeDependencies() {
@@ -160,10 +168,10 @@ class _BookListState extends State<BookList> {
       if (response['data'] == null) {
         _noResults = true;
       } else {
-        if(!mounted) return; //TODO: Extend the widget with a safeSetState method
+        if (!mounted) return;
         setState(() {
           _noResults = false;
-          _isOver = response['data'].length < perReq; //TODO: Make this actually work
+          _isOver = response['data'].length < perReq;
           _upTo += perReq;
           for (var book in response['data']) {
             _books.add(int.parse(book['id'].toString()));

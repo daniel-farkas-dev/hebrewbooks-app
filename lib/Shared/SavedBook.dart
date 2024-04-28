@@ -9,7 +9,7 @@ class SavedBook extends Book {
       required super.author,
       required super.pages,
       super.city,
-      super.year,
+      super.rawYear,
       required this.downloaded});
 
   SavedBook.fromJson(Map<String, dynamic> json)
@@ -19,7 +19,7 @@ class SavedBook extends Book {
           title: json['title'] as String,
           author: json['author'] as String,
           city: json['city'],
-          year: json['year'],
+          rawYear: json['year'],
           pages: json['pages'] as int,
         );
 }

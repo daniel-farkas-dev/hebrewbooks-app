@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Shared/BackToTop.dart';
 import 'package:hebrewbooks/Shared/BookList.dart';
 
 class Category extends StatefulWidget {
@@ -13,35 +14,38 @@ class Category extends StatefulWidget {
 
 class _CategoryState extends State<Category> {
   ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      child: SingleChildScrollView(
-        controller: scrollController,
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AppBar(
-              scrolledUnderElevation: 4.0,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shadowColor: Theme.of(context).colorScheme.shadow,
-              title: Text(widget.name,
-                  style: Theme.of(context).textTheme.titleLarge),
-              centerTitle: false,
+        height: MediaQuery.of(context).size.height,
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        child: Scaffold(
+          appBar: AppBar(
+            scrolledUnderElevation: 4.0,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            shadowColor: Theme.of(context).colorScheme.shadow,
+            title: Text(widget.name,
+                style: Theme.of(context).textTheme.titleLarge),
+            centerTitle: false,
+          ),
+          body: SingleChildScrollView(
+            controller: scrollController,
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BookList(
+                  type: 'subject',
+                  scrollController: scrollController,
+                  subjectId: widget.id,
+                ),
+              ],
             ),
-            BookList(
-              type: 'subject',
-              scrollController: scrollController,
-              subjectId: widget.id,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+          floatingActionButton: BackToTop(),
+        ));
   }
 }

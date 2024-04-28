@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Providers/BackToTopProvider.dart';
 import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
 import 'package:hebrewbooks/Shared/BookList.dart';
 import 'package:provider/provider.dart';
@@ -31,40 +32,40 @@ class _SearchState extends State<Search> {
     _searchQueryController.dispose();
     super.dispose();
   }
+  //TODO: Dispose of BookLst; currently if you switch back, the list is still there
+
+  @override
+  void initState() {
+    super.initState();
+      Provider.of<BackToTopProvider>(context, listen: false).setEnabled(false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SearchQueryProvider(),
-      child: Builder(
-        builder: (contextWithProvider) {
-          return Container(
-            height: MediaQuery.of(contextWithProvider).size.height,
-            color: Theme.of(contextWithProvider).colorScheme.secondaryContainer,
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AppBar(
-                    title: _isSearching
-                        ? _buildSearchField(contextWithProvider)
-                        : _buildTitle(contextWithProvider),
-                    actions: _buildActions(contextWithProvider),
-                  ),
-                  _buildPageView(contextWithProvider),
-                ],
-              ),
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      color: Theme.of(context).colorScheme.secondaryContainer,
+      child: SingleChildScrollView(
+        controller: scrollController,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppBar(
+              title: _isSearching
+                  ? _buildSearchField(context)
+                  : _buildTitle(context),
+              actions: _buildActions(context),
             ),
-          );
-        },
+            _buildPageView(context),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSearchField(BuildContext contextWithProvider) {
+  Widget _buildSearchField(BuildContext context) {
     return TextField(
       focusNode: _focusNode,
       controller: _searchQueryController,
@@ -72,12 +73,12 @@ class _SearchState extends State<Search> {
         hintText: 'Search Data...',
         border: InputBorder.none,
         hintStyle: TextStyle(
-            color: Theme.of(contextWithProvider).colorScheme.onSurfaceVariant),
+            color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
       style: TextStyle(
-          color: Theme.of(contextWithProvider).colorScheme.onSurface,
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 16.0),
-      onChanged: (query) => updateSearchQuery(query, contextWithProvider),
+      onChanged: (query) => updateSearchQuery(query, context),
     );
   }
 
@@ -86,7 +87,7 @@ class _SearchState extends State<Search> {
         .setSearchQuery(newQuery);
   }
 
-  Widget _buildPageView(BuildContext contextWithProvider) {
+  Widget _buildPageView(BuildContext context) {
     return Consumer<SearchQueryProvider>(
       builder: (context, searchQueryProvider, child) {
         final searchQuery = searchQueryProvider.searchQuery;
@@ -106,8 +107,8 @@ class _SearchState extends State<Search> {
                           onTap: () {
                             setState(() {
                               _searchQueryController.text = history[index];
-                              updateSearchQuery(history[index], contextWithProvider);
-                              _startSearch(contextWithProvider, false);
+                              updateSearchQuery(history[index], context);
+                              _startSearch(context, false);
                             });
                           },
                           trailing: const Icon(Icons.history),
@@ -132,14 +133,14 @@ class _SearchState extends State<Search> {
     );
   }
 
-  List<Widget> _buildActions(BuildContext contextWithProvider) {
+  List<Widget> _buildActions(BuildContext context) {
     if (_isSearching) {
       return <Widget>[
         IconButton(
           icon: const Icon(Icons.clear),
           onPressed: () {
             Navigator.pop(context);
-            _clearSearchQuery(contextWithProvider);
+            _clearSearchQuery(context);
           },
         ),
       ];
@@ -148,14 +149,14 @@ class _SearchState extends State<Search> {
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.search),
-        onPressed: () => _startSearch(contextWithProvider),
+        onPressed: () => _startSearch(context),
       ),
     ];
   }
 
-  void _startSearch(BuildContext contextWithProvider, [bool focus = true]) {
+  void _startSearch(BuildContext context, [bool focus = true]) {
     ModalRoute.of(context)
-        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: () => _stopSearching(contextWithProvider)));
+        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: () => _stopSearching(context)));
 
     setState(() {
       _isSearching = true;
@@ -163,18 +164,18 @@ class _SearchState extends State<Search> {
     if (focus) _focusNode.requestFocus();
   }
 
-  void _stopSearching(BuildContext contextWithProvider) {
-    _clearSearchQuery(contextWithProvider);
+  void _stopSearching(BuildContext context) {
+    _clearSearchQuery(context);
 
     setState(() {
       _isSearching = false;
     });
   }
 
-  void _clearSearchQuery(BuildContext contextWithProvider) {
+  void _clearSearchQuery(BuildContext context) {
     setState(() {
       _searchQueryController.clear();
-      updateSearchQuery('', contextWithProvider);
+      updateSearchQuery('', context);
     });
   }
 

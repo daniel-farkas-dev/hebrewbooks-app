@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:hebrewbooks/Providers/BackToTopProvider.dart';
+import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
 import 'package:hebrewbooks/Screens/Home.dart';
 import 'package:hebrewbooks/Screens/Saved.dart';
 import 'package:hebrewbooks/Screens/Search.dart';
+import 'package:hebrewbooks/Shared/BackToTop.dart';
 import 'package:hebrewbooks/Shared/Theme.dart';
+import 'package:provider/provider.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => BackToTopProvider()),
+        ChangeNotifierProvider(create: (context) => SearchQueryProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -51,22 +64,29 @@ class _MainPageState extends State<MainPage> {
         selectedIndex: _selectedIndex,
         destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home, color: Theme.of(context).colorScheme.onTertiaryContainer),
-            icon: Icon(Icons.home_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            selectedIcon: Icon(Icons.home,
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
+            icon: Icon(Icons.home_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             label: 'Home',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onTertiaryContainer),
-            icon: Icon(Icons.search_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            selectedIcon: Icon(Icons.search,
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
+            icon: Icon(Icons.search_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             label: 'Search',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.star, color: Theme.of(context).colorScheme.onTertiaryContainer),
-            icon: Icon(Icons.star_outline, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            selectedIcon: Icon(Icons.star,
+                color: Theme.of(context).colorScheme.onTertiaryContainer),
+            icon: Icon(Icons.star_outline,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             label: 'Saved',
           ),
         ],
       ),
+      floatingActionButton: BackToTop(route: _selectedIndex),
     );
   }
 }
