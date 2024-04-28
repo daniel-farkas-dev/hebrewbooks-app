@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   }
 
   static const suggestedSubjects = [
-    //Figure out a better system for this; maybe, eventualy Google Cloud Messages
+    //Figure out a better system for this; maybe, eventually Google Cloud Messages
     Subject(id: 5002, name: 'תנ"ך', total: -1),
     Subject(id: 3094, name: 'משניות', total: -1),
     Subject(id: 1537, name: 'הלכה', total: -1),
@@ -216,7 +216,7 @@ class _HomeState extends State<Home> {
                             ),
                           ]);
                         } else if (snapshot.hasError) {
-                          //TODO: Put a real offline indicator here- provider if fancy
+                          //TODO: Put real error handling here, lock down the app if no wifi, add check again button, etc.
                           return Text('${snapshot.error}');
                         }
                         return const CenteredSpinner();
