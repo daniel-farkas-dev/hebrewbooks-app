@@ -3,9 +3,6 @@ import 'dart:convert';
 import 'package:hebrewbooks/Services/fetch.dart';
 
 class Subject {
-  final int id;
-  final String name;
-  final int total;
 
   const Subject({
     required this.id,
@@ -17,6 +14,9 @@ class Subject {
       : id = json['id'] as int,
         name = json['name'] as String,
         total = json['total'] as int;
+  final int id;
+  final String name;
+  final int total;
 
   static List<Subject> fromJsonList(String json) {
     final trueJson = extractJsonFromJsonp(json);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hebrewbooks/Providers/BackToTopProvider.dart';
-import 'package:hebrewbooks/Providers/SearchQueryProvider.dart';
-import 'package:hebrewbooks/Shared/BookList.dart';
+import 'package:hebrewbooks/Providers/back_to_top_provider.dart';
+import 'package:hebrewbooks/Providers/search_query_provider.dart';
+import 'package:hebrewbooks/Shared/book_list.dart';
 import 'package:provider/provider.dart';
 
 class Search extends StatefulWidget {
@@ -16,7 +16,7 @@ class _SearchState extends State<Search> {
   final TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
   final String? hintText = 'Search Data';
-  final FocusNode _focusNode= FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   static const history = [
     'אגרות משה',
@@ -32,12 +32,14 @@ class _SearchState extends State<Search> {
     _searchQueryController.dispose();
     super.dispose();
   }
-  //TODO: Dispose of BookLst; currently if you switch back, the list is still there
+
+  //TODO: Dispose of BookLst; rn if you switch back, the list is still there
 
   @override
   void initState() {
     super.initState();
-      Provider.of<BackToTopProvider>(context, listen: false).setEnabled(false);
+    Provider.of<BackToTopProvider>(context, listen: false)
+        .setEnabled(enabled: false);
   }
 
   @override
@@ -48,8 +50,6 @@ class _SearchState extends State<Search> {
       child: SingleChildScrollView(
         controller: scrollController,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AppBar(
@@ -72,12 +72,13 @@ class _SearchState extends State<Search> {
       decoration: InputDecoration(
         hintText: 'Search Data...',
         border: InputBorder.none,
-        hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurfaceVariant),
+        hintStyle:
+            TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
       style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 16.0),
+        color: Theme.of(context).colorScheme.onSurface,
+        fontSize: 16,
+      ),
       onChanged: (query) => updateSearchQuery(query, context),
     );
   }
@@ -97,30 +98,31 @@ class _SearchState extends State<Search> {
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(history[index]),
-                          onTap: () {
-                            setState(() {
-                              _searchQueryController.text = history[index];
-                              updateSearchQuery(history[index], context);
-                              _startSearch(context, false);
-                            });
-                          },
-                          trailing: const Icon(Icons.history),
-                        ),
-                        const Divider(
-                          height: 0,
-                          thickness: 1,
-                        )
-                      ],
-                    );
-                  },
-                  itemCount: history.length),
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(history[index]),
+                        onTap: () {
+                          setState(() {
+                            _searchQueryController.text = history[index];
+                            updateSearchQuery(history[index], context);
+                            _startSearch(context, false);
+                          });
+                        },
+                        trailing: const Icon(Icons.history),
+                      ),
+                      const Divider(
+                        height: 0,
+                        thickness: 1,
+                      ),
+                    ],
+                  );
+                },
+                itemCount: history.length,
+              ),
             ),
           );
         }
@@ -155,8 +157,11 @@ class _SearchState extends State<Search> {
   }
 
   void _startSearch(BuildContext context, [bool focus = true]) {
-    ModalRoute.of(context)
-        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: () => _stopSearching(context)));
+    ModalRoute.of(context)?.addLocalHistoryEntry(
+      LocalHistoryEntry(
+        onRemove: () => _stopSearching(context),
+      ),
+    );
 
     setState(() {
       _isSearching = true;
@@ -179,7 +184,7 @@ class _SearchState extends State<Search> {
     });
   }
 
-  _buildTitle(BuildContext context) {
+  Widget _buildTitle(BuildContext context) {
     return InkWell(
       onTap: () {
         _startSearch(context);

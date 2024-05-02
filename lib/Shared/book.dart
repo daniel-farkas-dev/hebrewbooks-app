@@ -1,6 +1,20 @@
-import 'package:flutter/foundation.dart';
-
 class Book {
+
+  const Book({
+    required this.id,
+    required this.title,
+    required this.author,
+    required this.pages, this.city,
+    this.rawYear,
+  });
+
+  Book.fromJson(Map<String, dynamic> json)
+      : id = json['id'] as int,
+        title = json['title'] as String,
+        author = json['author'] as String,
+        city = json['city'] as String?,
+        rawYear = json['year'] as String?,
+        pages = json['pages'] as int;
   final int id;
   final String title;
   final String author;
@@ -38,37 +52,20 @@ class Book {
     'ת': 400,
   };
 
-  const Book({
-    required this.id,
-    required this.title,
-    required this.author,
-    this.city,
-    this.rawYear,
-    required this.pages,
-  });
-
-  Book.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as int,
-        title = json['title'] as String,
-        author = json['author'] as String,
-        city = json['city'] as String?,
-        rawYear = json['year'] as String?,
-        pages = json['pages'] as int;
-
-  dateToGregorian(String? date) {
+  String? dateToGregorian(String? date) {
     if (date == null) return date;
     // If the date has a number, space, or dash return
-    RegExp notHebrew = RegExp('[A-Za-z\-\_]+');
+    final notHebrew = RegExp('[A-Za-z-_]+');
     if (notHebrew.hasMatch(date)) {
       return date;
     }
-    int sum = int.tryParse(date) ?? lettersToNumbers(date);
+    var sum = int.tryParse(date) ?? lettersToNumbers(date);
     if (!sum.isFinite) {return date;}
-    if (sum != 0 && sum < 1000) {sum += 5000;}
+    if (sum > 0 && sum < 1000) {sum += 5000;}
     sum -= 3760;
     return sum.toString();
   }
-  lettersToNumbers(String date) {
+  int lettersToNumbers(String date) {
     var sum = 0;
     for (var i = 0; i < date.length; i++) {
       sum += gematria[date[i]]!;

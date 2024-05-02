@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hebrewbooks/Screens/Category.dart';
+import 'package:hebrewbooks/Screens/category.dart';
 import 'package:hebrewbooks/Services/fetch.dart';
-import 'package:hebrewbooks/Shared/CenteredSpinner.dart';
-import 'package:hebrewbooks/Shared/Subject.dart';
+import 'package:hebrewbooks/Shared/centered_spinner.dart';
+import 'package:hebrewbooks/Shared/subject.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   }
 
   static const suggestedSubjects = [
-    //Figure out a better system for this; maybe, eventually Google Cloud Messages
+    //Figure out a better system for this; maybe eventually Google Cloud Message
     Subject(id: 5002, name: 'תנ"ך', total: -1),
     Subject(id: 3094, name: 'משניות', total: -1),
     Subject(id: 1537, name: 'הלכה', total: -1),
@@ -41,52 +41,51 @@ class _HomeState extends State<Home> {
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AppBar(
-              scrolledUnderElevation: 4.0,
+              scrolledUnderElevation: 4,
               backgroundColor: Theme.of(context).colorScheme.surface,
               shadowColor: Theme.of(context).colorScheme.shadow,
               leading: SizedBox(
-                width: 48.0,
-                height: 48.0,
+                width: 48,
+                height: 48,
                 child: Align(
-                  alignment: Alignment.center,
                   child: Image.asset(
                     'assets/images/logo.png',
-                    width: 24.0,
-                    height: 24.0,
-                    repeat: ImageRepeat.noRepeat,
+                    width: 24,
+                    height: 24,
                   ),
                 ),
               ),
               title: Column(
                 children: <Widget>[
-                  Text('HebrewBooks',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  Text('63,016 Hebrew Books',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall), //TODO: Pull number from API
+                  Text(
+                    'HebrewBooks',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    '63,016 Hebrew Books',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ), //TODO: Pull number from API
                 ],
               ),
               centerTitle: true,
               actions: <Widget>[
                 TextButton(
                   style: TextButton.styleFrom(
-                    fixedSize: const Size(48.0, 48.0),
+                    fixedSize: const Size(48, 48),
                     textStyle: const TextStyle(
-                      fontSize: 24.0,
-                      height: 1.0,
+                      fontSize: 24,
+                      height: 1,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   child: const Text('א', style: TextStyle(color: Colors.black)),
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Switch to עברית')));
+                      const SnackBar(content: Text('Switch to עברית')),
+                    );
                   },
                 ),
               ],
@@ -96,15 +95,16 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(8),
               child: Column(
                 children: [
-                  Text('Browse',
-                      style: Theme.of(context).textTheme.headlineMedium),
+                  Text(
+                    'Browse',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
                   const SizedBox(
                     height: 8,
                   ),
                   Directionality(
                     textDirection: TextDirection.rtl,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -112,7 +112,7 @@ class _HomeState extends State<Home> {
                           fit: FlexFit.tight,
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
+                                const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('ש"ס'),
@@ -123,7 +123,7 @@ class _HomeState extends State<Home> {
                           fit: FlexFit.tight,
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
+                                const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('רמב"ם'),
@@ -134,7 +134,7 @@ class _HomeState extends State<Home> {
                           fit: FlexFit.tight,
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
+                                const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('הלכה'),
@@ -154,14 +154,16 @@ class _HomeState extends State<Home> {
                     height: 8,
                   ),
                   FutureBuilder(
-                      future: fullSubjects,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          data = snapshot.data as List<Subject>;
-                          return Column(children: [
-                            Text('Subjects',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium),
+                    future: fullSubjects,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        data = snapshot.data!;
+                        return Column(
+                          children: [
+                            Text(
+                              'Subjects',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
                             const SizedBox(
                               height: 8,
                             ),
@@ -174,53 +176,57 @@ class _HomeState extends State<Home> {
                               child: Directionality(
                                 textDirection: TextDirection.rtl,
                                 child: ListView.builder(
-                                    padding: EdgeInsets.zero,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Column(
-                                        children: [
-                                          if (index != 0) ...[
-                                            const Divider(
-                                              height: 0,
-                                              thickness: 1,
-                                            )
-                                          ],
-                                          ListTile(
-                                            title: Text(subjects[index].name),
-                                            onTap: subjects[index].id == -1
-                                                ? () {
-                                                    _swapSubjects();
-                                                  }
-                                                : () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              Category(
-                                                                id: subjects[index].id,
-                                                                name: subjects[index].name,
-                                                              )),
-                                                    );
-                                                  },
-                                            trailing: subjects[index].id == -1
-                                                ? const Icon(
-                                                    Icons.chevron_right)
-                                                : null,
+                                  padding: EdgeInsets.zero,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Column(
+                                      children: [
+                                        if (index != 0) ...[
+                                          const Divider(
+                                            height: 0,
+                                            thickness: 1,
                                           ),
                                         ],
-                                      );
-                                    },
-                                    itemCount: subjects.length),
+                                        ListTile(
+                                          title: Text(subjects[index].name),
+                                          onTap: subjects[index].id == -1
+                                              ? _swapSubjects
+                                              : () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute<Widget>(
+                                                      builder: (context) =>
+                                                          Category(
+                                                        id: subjects[index].id,
+                                                        name: subjects[index]
+                                                            .name,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                          trailing: subjects[index].id == -1
+                                              ? const Icon(
+                                                  Icons.chevron_right,
+                                                )
+                                              : null,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  itemCount: subjects.length,
+                                ),
                               ),
                             ),
-                          ]);
-                        } else if (snapshot.hasError) {
-                          //TODO: Put real error handling here, lock down the app if no wifi, add check again button, etc.
-                          return Text('${snapshot.error}');
-                        }
-                        return const CenteredSpinner();
-                      }),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        //TODO: Put real error handling here
+                        //TODO lock down the app if no data
+                        return Text('${snapshot.error}');
+                      }
+                      return const CenteredSpinner();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -230,7 +236,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _swapSubjects() async {
+  Future<void> _swapSubjects() async {
     setState(() {
       if (subjects == suggestedSubjects && data.isNotEmpty) {
         subjects = data;

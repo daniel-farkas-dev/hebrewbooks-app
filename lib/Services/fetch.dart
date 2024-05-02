@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:hebrewbooks/Shared/Book.dart';
-import 'package:hebrewbooks/Shared/Subject.dart';
+import 'package:hebrewbooks/Shared/book.dart';
+import 'package:hebrewbooks/Shared/subject.dart';
 import 'package:http/http.dart' as http;
 
 const bookUrl =
@@ -50,7 +50,6 @@ Future<Book> fetchBook(int id) async {
     // then parse the JSON.
     final trueJson = extractJsonFromJsonp(response.body);
     try {
-      final json = jsonDecode(trueJson) as Map<String, dynamic>;
       return Book.fromJson(jsonDecode(trueJson) as Map<String, dynamic>);
     } on FormatException {
       throw FormatException('Failed to parse JSON: $trueJson');
@@ -102,7 +101,10 @@ String coverUrl(int id, int width, int height) {
 }
 
 Future<Map<String, dynamic>> fetchSubjectBooks(
-    int id, int start, int length) async {
+  int id,
+  int start,
+  int length,
+) async {
   var url = topicsUrl;
   url += '&id=$id&start=$start&length=$length';
   if (Platform.isAndroid || Platform.isFuchsia) {
@@ -113,11 +115,14 @@ Future<Map<String, dynamic>> fetchSubjectBooks(
     throw Exception('Unsupported platform- API key unknown');
   }
   final res = await http.read(Uri.parse(url));
-  return jsonDecode(extractJsonFromJsonp(res));
+  return jsonDecode(extractJsonFromJsonp(res)) as Future<Map<String, dynamic>>;
 }
 
 Future<Map<String, dynamic>> fetchSearchBooks(
-    String query, int start, int length) async {
+  String query,
+  int start,
+  int length,
+) async {
   var url = searchUrl;
   url += '&title_search=$query&start=$start&length=$length';
   if (Platform.isAndroid || Platform.isFuchsia) {
@@ -132,5 +137,5 @@ Future<Map<String, dynamic>> fetchSearchBooks(
   if (json == '') {
     return {};
   }
-  return jsonDecode(json);
+  return jsonDecode(json) as Future<Map<String, dynamic>>;
 }

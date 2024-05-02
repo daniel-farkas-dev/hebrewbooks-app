@@ -7,7 +7,7 @@ class BackToTopProvider extends ChangeNotifier {
   bool get enabled => _enabled;
   bool get pressed => _pressed;
 
-  void setEnabled(bool enabled) {
+  void setEnabled({required bool enabled}) {
     _enabled = enabled;
     notifyListeners();
   }
