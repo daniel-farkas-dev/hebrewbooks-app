@@ -4,9 +4,13 @@ import 'package:hebrewbooks/Shared/book.dart';
 import 'package:hebrewbooks/Shared/centered_spinner.dart';
 import 'package:share_plus/share_plus.dart';
 
+/// The information page of a book.
 class Info extends StatefulWidget {
-
   const Info({required this.id, super.key});
+
+  /// The id of the book.
+  ///
+  /// The book is accessible at `https://beta.hebrewbooks.org/$id`.
   final int id;
 
   @override
@@ -23,7 +27,7 @@ class _InfoState extends State<Info> {
   void initState() {
     //TODO: Start downloading the book
     super.initState();
-    futureBook = fetchBook(widget.id);
+    futureBook = fetchInfo(widget.id);
   }
 
   @override

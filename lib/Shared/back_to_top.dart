@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Providers/back_to_top_provider.dart';
 import 'package:provider/provider.dart';
 
+/// A floating action button that scrolls to the top of the page.
 class BackToTop extends StatelessWidget {
   const BackToTop({
     super.key,
     this.route,
   });
 
+  /// The route that the user is currently on in the MainPage.
   final int? route;
 
-  static const searchRoute = 1;
+  // The main page route for the search page.
+  static const _searchRoute = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class BackToTop extends StatelessWidget {
       builder: (context, route, child) {
         return Visibility(
           visible: context.watch<BackToTopProvider>().enabled &&
-              (route == null || route == searchRoute),
+              (route == null || route == _searchRoute),
           child: FloatingActionButton(
             onPressed: () {
               context.read<BackToTopProvider>().press();

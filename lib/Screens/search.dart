@@ -4,6 +4,7 @@ import 'package:hebrewbooks/Providers/search_query_provider.dart';
 import 'package:hebrewbooks/Shared/book_list.dart';
 import 'package:provider/provider.dart';
 
+/// The search screen of the application.
 class Search extends StatefulWidget {
   const Search({super.key});
 
@@ -12,13 +13,12 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  ScrollController scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
-  final String? hintText = 'Search Data';
   final FocusNode _focusNode = FocusNode();
 
-  static const history = [
+  static const _history = [
     'אגרות משה',
     'לקוטי אמרים תניא',
     'גור אריה יהודה',
@@ -28,7 +28,7 @@ class _SearchState extends State<Search> {
 
   @override
   void dispose() {
-    scrollController.dispose();
+    _scrollController.dispose();
     _searchQueryController.dispose();
     super.dispose();
   }
@@ -38,8 +38,7 @@ class _SearchState extends State<Search> {
   @override
   void initState() {
     super.initState();
-    Provider.of<BackToTopProvider>(context, listen: false)
-        .setEnabled(enabled: false);
+    Provider.of<BackToTopProvider>(context, listen: false).enabled = false;
   }
 
   @override
@@ -48,7 +47,7 @@ class _SearchState extends State<Search> {
       height: MediaQuery.of(context).size.height,
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: SingleChildScrollView(
-        controller: scrollController,
+        controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -84,8 +83,8 @@ class _SearchState extends State<Search> {
   }
 
   void updateSearchQuery(String newQuery, BuildContext context) {
-    Provider.of<SearchQueryProvider>(context, listen: false)
-        .setSearchQuery(newQuery);
+    Provider.of<SearchQueryProvider>(context, listen: false).searchQuery =
+        newQuery;
   }
 
   Widget _buildPageView(BuildContext context) {
@@ -94,7 +93,7 @@ class _SearchState extends State<Search> {
         final searchQuery = searchQueryProvider.searchQuery;
         if (searchQuery.length < 3) {
           return SizedBox(
-            height: history.length * 56.0,
+            height: _history.length * 56.0,
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: ListView.builder(
@@ -104,11 +103,11 @@ class _SearchState extends State<Search> {
                   return Column(
                     children: [
                       ListTile(
-                        title: Text(history[index]),
+                        title: Text(_history[index]),
                         onTap: () {
                           setState(() {
-                            _searchQueryController.text = history[index];
-                            updateSearchQuery(history[index], context);
+                            _searchQueryController.text = _history[index];
+                            updateSearchQuery(_history[index], context);
                             _startSearch(context, false);
                           });
                         },
@@ -121,7 +120,7 @@ class _SearchState extends State<Search> {
                     ],
                   );
                 },
-                itemCount: history.length,
+                itemCount: _history.length,
               ),
             ),
           );
@@ -129,7 +128,7 @@ class _SearchState extends State<Search> {
         debugPrint('Rebuilding search list $searchQuery');
         return BookList(
           type: 'search',
-          scrollController: scrollController,
+          scrollController: _scrollController,
         );
       },
     );

@@ -1,13 +1,15 @@
+/// A class that represents a book object.
 class Book {
-
   const Book({
     required this.id,
     required this.title,
     required this.author,
-    required this.pages, this.city,
+    required this.pages,
+    this.city,
     this.rawYear,
   });
 
+  /// Creates a [Book] from the json returned by the fetchInfo api call.
   Book.fromJson(Map<String, dynamic> json)
       : id = json['id'] as int,
         title = json['title'] as String,
@@ -15,14 +17,32 @@ class Book {
         city = json['city'] as String?,
         rawYear = json['year'] as String?,
         pages = json['pages'] as int;
+
+  /// The id of the book.
+  ///
+  /// The book is accessible at `https://beta.hebrewbooks.org/$id`.
   final int id;
+
+  /// The title of the book.
   final String title;
+
+  /// The author of the book.
   final String author;
+
+  /// The city where the book was published.
   final String? city;
+
+  /// The year value given by the json.
   final String? rawYear;
-  String? get year => dateToGregorian(rawYear);
+
+  /// The year of the book in the Gregorian calendar.
+  String? get year => _dateToGregorian(rawYear);
+
+  /// The number of pages in the book.
   final int pages;
-  static const Map<String, int> gematria = {
+
+  /// A map of hebrew letters to their corresponding numbers.
+  static const Map<String, int> _gematria = {
     'א': 1,
     'ב': 2,
     'ג': 3,
@@ -52,23 +72,28 @@ class Book {
     'ת': 400,
   };
 
-  String? dateToGregorian(String? date) {
+  String? _dateToGregorian(String? date) {
     if (date == null) return date;
     // If the date has a number, space, or dash return
     final notHebrew = RegExp('[A-Za-z-_]+');
     if (notHebrew.hasMatch(date)) {
       return date;
     }
-    var sum = int.tryParse(date) ?? lettersToNumbers(date);
-    if (!sum.isFinite) {return date;}
-    if (sum > 0 && sum < 1000) {sum += 5000;}
+    var sum = int.tryParse(date) ?? _lettersToNumbers(date);
+    if (!sum.isFinite) {
+      return date;
+    }
+    if (sum > 0 && sum < 1000) {
+      sum += 5000;
+    }
     sum -= 3760;
     return sum.toString();
   }
-  int lettersToNumbers(String date) {
+
+  int _lettersToNumbers(String date) {
     var sum = 0;
     for (var i = 0; i < date.length; i++) {
-      sum += gematria[date[i]]!;
+      sum += _gematria[date[i]]!;
     }
     return sum;
   }

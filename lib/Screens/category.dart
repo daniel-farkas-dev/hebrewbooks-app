@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Shared/back_to_top.dart';
 import 'package:hebrewbooks/Shared/book_list.dart';
 
+/// A page that displays a list of books in a specific category.
 class Category extends StatefulWidget {
   const Category({required this.id, required this.name, super.key});
 
+  /// The hebrewbooks.org api ID of the category.
   final int id;
+
+  /// The display name of the category.
   final String name;
 
   @override

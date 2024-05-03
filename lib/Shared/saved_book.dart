@@ -1,5 +1,6 @@
 import 'package:hebrewbooks/Shared/book.dart';
 
+/// A class that represents a book that has been saved for easy access.
 class SavedBook extends Book {
   const SavedBook({
     required super.id,
@@ -11,6 +12,7 @@ class SavedBook extends Book {
     super.rawYear,
   });
 
+  /// Creates a [SavedBook] from json.
   SavedBook.fromJson(Map<String, dynamic> json)
       : downloaded = json['downloaded'] as bool,
         super(
@@ -21,5 +23,7 @@ class SavedBook extends Book {
           rawYear: json['year'] as String,
           pages: json['pages'] as int,
         );
+
+  /// Whether the book has been downloaded to the device.
   final bool downloaded;
 }

@@ -4,6 +4,7 @@ import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/centered_spinner.dart';
 import 'package:hebrewbooks/Shared/subject.dart';
 
+/// The home screen of the application.
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -32,7 +33,7 @@ class _HomeState extends State<Home> {
     Subject(id: 4682, name: 'שו"ת', total: -1),
     Subject(id: -1, name: 'More', total: -1),
   ];
-  var subjects = suggestedSubjects;
+  var _subjects = suggestedSubjects;
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +112,7 @@ class _HomeState extends State<Home> {
                         Flexible(
                           fit: FlexFit.tight,
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('ש"ס'),
@@ -122,8 +122,7 @@ class _HomeState extends State<Home> {
                         Flexible(
                           fit: FlexFit.tight,
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('רמב"ם'),
@@ -133,8 +132,7 @@ class _HomeState extends State<Home> {
                         Flexible(
                           fit: FlexFit.tight,
                           child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: FilledButton(
                               onPressed: () {},
                               child: const Text('הלכה'),
@@ -172,7 +170,7 @@ class _HomeState extends State<Home> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              height: 56 * subjects.length.toDouble(),
+                              height: 56 * _subjects.length.toDouble(),
                               child: Directionality(
                                 textDirection: TextDirection.rtl,
                                 child: ListView.builder(
@@ -188,8 +186,8 @@ class _HomeState extends State<Home> {
                                           ),
                                         ],
                                         ListTile(
-                                          title: Text(subjects[index].name),
-                                          onTap: subjects[index].id == -1
+                                          title: Text(_subjects[index].name),
+                                          onTap: _subjects[index].id == -1
                                               ? _swapSubjects
                                               : () {
                                                   Navigator.push(
@@ -197,14 +195,14 @@ class _HomeState extends State<Home> {
                                                     MaterialPageRoute<Widget>(
                                                       builder: (context) =>
                                                           Category(
-                                                        id: subjects[index].id,
-                                                        name: subjects[index]
+                                                        id: _subjects[index].id,
+                                                        name: _subjects[index]
                                                             .name,
                                                       ),
                                                     ),
                                                   );
                                                 },
-                                          trailing: subjects[index].id == -1
+                                          trailing: _subjects[index].id == -1
                                               ? const Icon(
                                                   Icons.chevron_right,
                                                 )
@@ -213,7 +211,7 @@ class _HomeState extends State<Home> {
                                       ],
                                     );
                                   },
-                                  itemCount: subjects.length,
+                                  itemCount: _subjects.length,
                                 ),
                               ),
                             ),
@@ -238,10 +236,10 @@ class _HomeState extends State<Home> {
 
   Future<void> _swapSubjects() async {
     setState(() {
-      if (subjects == suggestedSubjects && data.isNotEmpty) {
-        subjects = data;
+      if (_subjects == suggestedSubjects && data.isNotEmpty) {
+        _subjects = data;
       } else {
-        subjects = suggestedSubjects;
+        _subjects = suggestedSubjects;
       }
     });
   }

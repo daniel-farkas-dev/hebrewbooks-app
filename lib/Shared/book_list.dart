@@ -7,6 +7,7 @@ import 'package:hebrewbooks/Shared/book_tile.dart';
 import 'package:hebrewbooks/Shared/centered_spinner.dart';
 import 'package:provider/provider.dart';
 
+/// A list of [BookTile] widgets.
 class BookList extends StatefulWidget {
   const BookList({
     required this.type,
@@ -17,8 +18,19 @@ class BookList extends StatefulWidget {
             (type == 'subject' && subjectId != null) || (type == 'search'), '''
 subjectId must be provided when type is subject,
 type must be search otherwise.''');
+
+  /// The source of the listed books.
+  ///
+  /// If [type] is 'subject', [subjectId] must be provided.
+  /// If [type] is 'search', [subjectId] must not be provided.
   final String type;
+
+  /// The ScrollController of the parent widget.
   final ScrollController scrollController;
+
+  /// The id of the subject.
+  ///
+  /// Must be provided when [type] is 'subject'.
   final int? subjectId;
 
   @override
@@ -32,7 +44,7 @@ class _BookListState extends State<BookList> {
   bool _isLoading = true;
   bool _isOver = false;
   bool _noResults = false;
-  static const int perReq = 15;
+  static const int _perReq = 15;
 
   @override
   void initState() {
@@ -45,14 +57,12 @@ class _BookListState extends State<BookList> {
       if (widget.scrollController.position.pixels >= nextPageTrigger &&
           !_isOver) {
         _isLoading = true;
-        fetchData();
+        _fetchData();
       }
       if (widget.scrollController.position.pixels > 100) {
-        Provider.of<BackToTopProvider>(context, listen: false)
-            .setEnabled(enabled: true);
+        Provider.of<BackToTopProvider>(context, listen: false).enabled = true;
       } else {
-        Provider.of<BackToTopProvider>(context, listen: false)
-            .setEnabled(enabled: false);
+        Provider.of<BackToTopProvider>(context, listen: false).enabled = false;
       }
     });
     Provider.of<BackToTopProvider>(context, listen: false).addListener(() {
@@ -74,7 +84,7 @@ class _BookListState extends State<BookList> {
       if (_isLoading) {
         return const CenteredSpinner();
       } else if (_isError) {
-        return Center(child: errorDialog(size: 20));
+        return Center(child: _errorDialog(size: 20));
       } else if (_noResults) {
         return const Center(child: Text('No Results'));
       }
@@ -90,7 +100,7 @@ class _BookListState extends State<BookList> {
           itemBuilder: (context, index) {
             if (index == _books.length) {
               if (_isError) {
-                return Center(child: errorDialog(size: 15));
+                return Center(child: _errorDialog(size: 15));
               } else {
                 return null;
               }
@@ -99,7 +109,7 @@ class _BookListState extends State<BookList> {
             if (bookId < 0) {
               return null;
             }
-            return BookTile(id: bookId, removeFromSet: removeFromSet);
+            return BookTile(id: bookId, removeFromSet: _removeFromSet);
           },
         ),
       ),
@@ -115,10 +125,10 @@ class _BookListState extends State<BookList> {
     _isError = false;
     _books.clear();
     _upTo = 1;
-    fetchData();
+    _fetchData();
   }
 
-  Widget errorDialog({required double size}) {
+  Widget _errorDialog({required double size}) {
     return SizedBox(
       height: 180,
       width: 200,
@@ -141,7 +151,7 @@ class _BookListState extends State<BookList> {
               setState(() {
                 _isLoading = true;
                 _isError = false;
-                fetchData();
+                _fetchData();
               });
             },
             child: const Text(
@@ -154,7 +164,7 @@ class _BookListState extends State<BookList> {
     );
   }
 
-  Future<void> fetchData() async {
+  Future<void> _fetchData() async {
     if (_noResults || _isOver || !mounted) {
       debugPrint(
         '''
@@ -177,10 +187,10 @@ class _BookListState extends State<BookList> {
       final Map<String, List> response;
       if (widget.type == 'subject') {
         response =
-            await fetchSubjectBooks(widget.subjectId ?? -1, _upTo, perReq)
+            await fetchSubjectBooks(widget.subjectId ?? -1, _upTo, _perReq)
                 as Map<String, List>;
       } else {
-        response = await fetchSearchBooks(searchQuery, _upTo, perReq)
+        response = await fetchSearchBooks(searchQuery, _upTo, _perReq)
             as Map<String, List>;
       }
 
@@ -191,8 +201,8 @@ class _BookListState extends State<BookList> {
         setState(
           () {
             _noResults = false;
-            _isOver = response['data']!.length < perReq;
-            _upTo += perReq;
+            _isOver = response['data']!.length < _perReq;
+            _upTo += _perReq;
             for (final book in response['data']! as List<List<String>>) {
               _books.add(int.parse(book['id']));
             }
@@ -207,7 +217,7 @@ class _BookListState extends State<BookList> {
     _isLoading = false;
   }
 
-  void removeFromSet(int id) {
+  void _removeFromSet(int id) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _books.remove(id);

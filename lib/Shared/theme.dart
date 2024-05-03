@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-var seed = const Color.fromRGBO(252, 88, 5, 1);
-var lightTheme = ThemeData(
-  colorScheme: ColorScheme.fromSeed(seedColor: seed),
+Color _seed = const Color.fromRGBO(252, 88, 5, 1);
+
+/// Light theme of MyApp.
+ThemeData lightTheme = ThemeData(
+  colorScheme: ColorScheme.fromSeed(seedColor: _seed),
   useMaterial3: true,
 );

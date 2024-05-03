@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Shared/saved_book.dart';
 
+/// The saved books screen.
 class Saved extends StatefulWidget {
   const Saved({super.key});
 
@@ -11,7 +12,7 @@ class Saved extends StatefulWidget {
 class _SavedState extends State<Saved> {
   //TODO: Pull these from local storage
   //TODO: Make a data object for these which has all the info
-  static var saved = [
+  static final _saved = [
     SavedBook.fromJson({
       'title': 'ערוך השלחן – חושן משפט א',
       'author': 'יחיאל מיכל בן אריה יצחק עפשטיין',
@@ -56,7 +57,7 @@ class _SavedState extends State<Saved> {
               centerTitle: true,
             ),
             SizedBox(
-              height: saved.length * 72.0,
+              height: _saved.length * 72.0,
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: ListView.builder(
@@ -66,15 +67,15 @@ class _SavedState extends State<Saved> {
                     return Column(
                       children: [
                         ListTile(
-                          title: Text(saved[index].title),
+                          title: Text(_saved[index].title),
                           subtitle: Text(
-                            '${saved[index].author} • ${saved[index].year}',
+                            '${_saved[index].author} • ${_saved[index].year}',
                           ),
                           onTap: () {},
                           trailing: Wrap(
                             //TODO: Change the local history
                             children: [
-                              if (saved[index].downloaded)
+                              if (_saved[index].downloaded)
                                 const Icon(
                                   Icons.download_for_offline_outlined,
                                 )
@@ -91,7 +92,7 @@ class _SavedState extends State<Saved> {
                       ],
                     );
                   },
-                  itemCount: saved.length,
+                  itemCount: _saved.length,
                 ),
               ),
             ),

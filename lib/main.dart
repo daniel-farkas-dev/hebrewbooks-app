@@ -8,7 +8,6 @@ import 'package:hebrewbooks/Shared/back_to_top.dart';
 import 'package:hebrewbooks/Shared/theme.dart';
 import 'package:provider/provider.dart';
 
-
 void main() {
   runApp(
     MultiProvider(
@@ -21,6 +20,7 @@ void main() {
   );
 }
 
+/// The root of the application.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -29,15 +29,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'HebrewBooks',
       theme: lightTheme,
-      home: const MainPage(title: 'HebrewBooks'),
+      home: const MainPage(),
     );
   }
 }
 
+/// The main page of [MyApp]- it contains home, search and saved routes.
 class MainPage extends StatefulWidget {
-  const MainPage({required this.title, super.key});
-
-  final String title;
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -64,24 +63,36 @@ class _MainPageState extends State<MainPage> {
         selectedIndex: _selectedIndex,
         destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home,
-                color: Theme.of(context).colorScheme.onTertiaryContainer,),
-            icon: Icon(Icons.home_outlined,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,),
+            selectedIcon: Icon(
+              Icons.home,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
+            ),
+            icon: Icon(
+              Icons.home_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             label: 'Home',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.search,
-                color: Theme.of(context).colorScheme.onTertiaryContainer,),
-            icon: Icon(Icons.search_outlined,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,),
+            selectedIcon: Icon(
+              Icons.search,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
+            ),
+            icon: Icon(
+              Icons.search_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             label: 'Search',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.star,
-                color: Theme.of(context).colorScheme.onTertiaryContainer,),
-            icon: Icon(Icons.star_outline,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,),
+            selectedIcon: Icon(
+              Icons.star,
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
+            ),
+            icon: Icon(
+              Icons.star_outline,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             label: 'Saved',
           ),
         ],

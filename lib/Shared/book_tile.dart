@@ -5,10 +5,18 @@ import 'package:hebrewbooks/Services/fetch.dart';
 import 'package:hebrewbooks/Shared/book.dart';
 import 'package:hebrewbooks/Shared/centered_spinner.dart';
 
+/// A tile that displays a book's title, author, and cover image.
+///
+/// The tile should be used in a BookList.
 class BookTile extends StatefulWidget {
-
   const BookTile({required this.id, required this.removeFromSet, super.key});
+
+  /// The id of the book.
+  ///
+  /// The book is accessible at `https://beta.hebrewbooks.org/$id`.
   final int id;
+
+  /// A function that removes the book from the set that contains it.
   final Function removeFromSet;
 
   @override
@@ -20,7 +28,7 @@ class _BookTileState extends State<BookTile> {
   bool _isError = false;
   int _reloaded = 0;
 
-  static const int imageHeight = 56;
+  static const int _imageHeight = 56;
 
   @override
   void initState() {
@@ -57,20 +65,20 @@ class _BookTileState extends State<BookTile> {
               //TODO: Make the overflow less ugly
               trailing: Image.network(
                 coverUrl(snapshot.data!.id, 100, 100),
-                height: imageHeight.toDouble(),
+                height: _imageHeight.toDouble(),
                 fit: BoxFit.fitHeight,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
                   }
                   return const CenteredSpinner(
-                    size: imageHeight ~/ 2,
+                    size: _imageHeight ~/ 2,
                   );
                 },
                 errorBuilder: (context, error, stackTrace) {
                   debugPrint('Error: $error');
                   return SizedBox(
-                    height: imageHeight.toDouble(),
+                    height: _imageHeight.toDouble(),
                     child: Text(
                       'Error: Image did not load',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -113,7 +121,7 @@ class _BookTileState extends State<BookTile> {
         return;
       }
       setState(() {
-        book = fetchBook(widget.id);
+        book = fetchInfo(widget.id);
         _reloaded++;
       });
     });
@@ -121,7 +129,7 @@ class _BookTileState extends State<BookTile> {
 
   Future<Book>? _safeFetchBook(int id) {
     try {
-      return fetchBook(id);
+      return fetchInfo(id);
     } on FormatException {
       _isError = true;
     }
