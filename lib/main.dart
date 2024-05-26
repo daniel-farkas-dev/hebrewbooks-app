@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hebrewbooks/Providers/back_to_top_provider.dart';
+import 'package:hebrewbooks/Providers/saved_books_provider.dart';
 import 'package:hebrewbooks/Providers/search_query_provider.dart';
 import 'package:hebrewbooks/Screens/home.dart';
 import 'package:hebrewbooks/Screens/saved.dart';
@@ -12,6 +13,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => SavedBooksProvider()),
         ChangeNotifierProvider(create: (context) => BackToTopProvider()),
         ChangeNotifierProvider(create: (context) => SearchQueryProvider()),
       ],

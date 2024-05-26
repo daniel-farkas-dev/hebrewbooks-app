@@ -26,10 +26,4 @@ dev_dependencies:
 flutter: 
   assets: 
     - assets/images/logo.png
-  fonts: 
-    - 
-      family: icomoon
-      fonts: 
-        - 
-          asset: assets/fonts/icomoon.ttf
   uses-material-design: true

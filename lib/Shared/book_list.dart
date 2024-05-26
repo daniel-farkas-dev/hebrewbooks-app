@@ -184,33 +184,30 @@ class _BookListState extends State<BookList> {
     }
 
     try {
-      final Map<String, List> response;
+      final List<int> response;
       if (widget.type == 'subject') {
         response =
-            await fetchSubjectBooks(widget.subjectId ?? -1, _upTo, _perReq)
-                as Map<String, List>;
+            await fetchSubjectBooks(widget.subjectId ?? -1, _upTo, _perReq);
       } else {
-        response = await fetchSearchBooks(searchQuery, _upTo, _perReq)
-            as Map<String, List>;
+        response = await fetchSearchBooks(searchQuery, _upTo, _perReq);
       }
-
-      if (response['data'] == null) {
-        _noResults = true;
-      } else {
-        if (!mounted) return;
-        setState(
-          () {
-            _noResults = false;
-            _isOver = response['data']!.length < _perReq;
-            _upTo += _perReq;
-            for (final book in response['data']! as List<List<String>>) {
-              _books.add(int.parse(book['id']));
-            }
-          },
-        );
+      if (response.isEmpty) {
+        debugPrint('No results found');
+        _isError = true;
+        return;
       }
+      if (!mounted) return;
+      setState((){
+        _isError = false;
+        _noResults = false;
+        _isOver = response.length < _perReq; //TODO: make this fool proof
+        _upTo += _perReq;
+        for (final book in response) {
+          _books.add(book);
+        }
+      });
     } catch (e) {
-      debugPrint('fetchData() failed: $e');
+      debugPrint('fetchData() failed: $e}');
       if (!mounted) return;
       _isError = true;
     }

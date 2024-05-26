@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart';
 import 'package:hebrewbooks/Shared/book.dart';
 import 'package:hebrewbooks/Shared/subject.dart';
 import 'package:http/http.dart' as http;
@@ -12,25 +13,25 @@ const _infoUrl =
 /// The api endpoint for fetching book page images.
 ///
 /// This should only be used for fetching the cover image.
-const imageUrl = 'https://beta.hebrewbooks.org/reader/pagepngs/';
+const _imageUrl = 'https://beta.hebrewbooks.org/reader/pagepngs/';
 
 /// The api endpoint for fetching the list of subjects.
-const subjectsUrl =
+const _subjectsUrl =
     'https://beta.hebrewbooks.org/api/api.ashx?req=subject_list&type=subject&callback=callback';
 
 /// The api endpoint for fetching the list of books in a subject.
-const topicsUrl =
+const _topicsUrl =
     'https://beta.hebrewbooks.org/api/api.ashx?req=title_list_for_subject&list_type=subject&callback=callback';
 
 /// The api endpoint for searching for books.
-const searchUrl =
+const _searchUrl =
     'https://beta.hebrewbooks.org/api/api.ashx?author_search=&callback=callback';
 
 /// The api key for iOS.
-const iosKey = '/*ios api key*/';
+const _iosKey = '/*ios api key*/';
 
 /// The api key for Android and Fuchsia.
-const androidKey = '/*android api key*/';
+const _androidKey = '/*android api key*/';
 
 /// Extracts the JSON string from [jsonp].
 String extractJsonFromJsonp(String jsonp) {
@@ -52,9 +53,9 @@ String extractJsonFromJsonp(String jsonp) {
 Future<Book> fetchInfo(int id) async {
   var url = _infoUrl;
   if (Platform.isAndroid || Platform.isFuchsia) {
-    url += '$androidKey&id=$id';
+    url += '$_androidKey&id=$id';
   } else if (Platform.isIOS) {
-    url += '$iosKey&id=$id';
+    url += '$_iosKey&id=$id';
   } else {
     throw Exception('Unsupported platform- API key unknown');
   }
@@ -82,11 +83,11 @@ Future<Book> fetchInfo(int id) async {
 
 /// Fetches the list of subjects.
 Future<List<Subject>> fetchSubjects() async {
-  var url = subjectsUrl;
+  var url = _subjectsUrl;
   if (Platform.isAndroid || Platform.isFuchsia) {
-    url += androidKey;
+    url += _androidKey;
   } else if (Platform.isIOS) {
-    url += iosKey;
+    url += _iosKey;
   } else {
     throw Exception('Unsupported platform- API key unknown');
   }
@@ -100,18 +101,20 @@ Future<List<Subject>> fetchSubjects() async {
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    debugPrint('''
+Failed subject list request: Status code: ${response.statusCode}, ${response.body}''');
+    throw Exception('Failed to load album, check console');
   }
 }
 
 /// Returns the URL for the cover image of the book with the given [id].
 String coverUrl(int id, int width, int height) {
-  var url = imageUrl;
+  var url = _imageUrl;
   url += '${id}_1_${width}_$height.png?';
   if (Platform.isAndroid || Platform.isFuchsia) {
-    url += androidKey;
+    url += _androidKey;
   } else if (Platform.isIOS) {
-    url += iosKey;
+    url += _iosKey;
   } else {
     throw Exception('Unsupported platform- API key unknown');
   }
@@ -119,43 +122,59 @@ String coverUrl(int id, int width, int height) {
 }
 
 /// Fetches the list of books in the subject with the given [id].
-Future<Map<String, dynamic>> fetchSubjectBooks(
+Future<List<int>> fetchSubjectBooks(
   int id,
   int start,
   int length,
 ) async {
-  var url = topicsUrl;
+  var url = _topicsUrl;
   url += '&id=$id&start=$start&length=$length';
   if (Platform.isAndroid || Platform.isFuchsia) {
-    url += androidKey;
+    url += _androidKey;
   } else if (Platform.isIOS) {
-    url += iosKey;
+    url += _iosKey;
   } else {
     throw Exception('Unsupported platform- API key unknown');
   }
   final res = await http.read(Uri.parse(url));
-  return jsonDecode(extractJsonFromJsonp(res)) as Future<Map<String, dynamic>>;
+  final data = (jsonDecode(extractJsonFromJsonp(res))
+      as Map<String, dynamic>)['data'] as List<dynamic>?;
+  if (data == null) {
+    return List.empty();
+  } else {
+    final books = <int>[];
+    for (final book in data) {
+      books.add(int.parse(book['id'].toString()));
+    }
+    return books;
+  }
 }
 
 /// Fetches the list of books with the given search [query].
-Future<Map<String, dynamic>> fetchSearchBooks(
+Future<List<int>> fetchSearchBooks(
   String query,
   int start,
   int length,
 ) async {
-  var url = searchUrl;
+  var url = _searchUrl;
   url += '&title_search=$query&start=$start&length=$length';
   if (Platform.isAndroid || Platform.isFuchsia) {
-    url += androidKey;
+    url += _androidKey;
   } else if (Platform.isIOS) {
-    url += iosKey;
+    url += _iosKey;
   } else {
     throw Exception('Unsupported platform- API key unknown');
   }
   final res = await http.read(Uri.parse(url));
-  final json = extractJsonFromJsonp(res);
-  if (json == '') {
-    return {};
+  final data = (jsonDecode(extractJsonFromJsonp(res))
+      as Map<String, dynamic>)['data'] as List<dynamic>?;
+  if (data == null) {
+    return List.empty();
+  } else {
+    final books = <int>[];
+    for (final book in data) {
+      books.add(int.parse(book['id'].toString()));
+    }
+    return books;
   }
-  return jsonDecode(json) as Future<Map<String, dynamic>>;
 }

@@ -38,7 +38,9 @@ class _SearchState extends State<Search> {
   @override
   void initState() {
     super.initState();
-    Provider.of<BackToTopProvider>(context, listen: false).enabled = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<BackToTopProvider>(context, listen: false).enabled = false;
+    });
   }
 
   @override
